@@ -1,6 +1,7 @@
 require 'twitter'
 require 'uri'
 require 'natto'#形態素解析ライブラリmecab用
+require 'magic_cloud'#ワードクラウド作成用
 
 #インスランスの作成
 @Twitter = Twitter::REST::Client.new do |c|
@@ -28,7 +29,7 @@ def getTweets(username, count)
   return tweets
 end
 
-tweets = getTweets("TwitterJP", 100)
+tweets = getTweets("Lily_desuuuuu", 100)
 
 #puts tweets #確認用
 
@@ -59,3 +60,9 @@ tweets_non_url.each do |t|
     end
   end
 end
+
+#puts words #確認用
+font = 'Arial Unicode'
+words =  words.group_by(&:itself).map{ |key, value| [key, value.count] }.to_h
+cloud = MagicCloud::Cloud.new(words, rotate: :none, scale: :linear, :font_family=>font)
+cloud.draw(500, 250).write("cloud1.png")
