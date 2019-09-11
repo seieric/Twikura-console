@@ -18,7 +18,7 @@ def getTweets(username, count)
   tweets = Array[@Twitter.user_timeline(username, {count: 1})][0] #最新の投稿を配列で取得
 
   epoc_count.times do
-    @Twitter.user_timeline(username, {count: 200, max_id: tweets.last.id-1}).each do |t|
+    @Twitter.user_timeline(username, {count: 200, max_id: tweets.[-1].id-1}).each do |t|
       break if tweets.count == count
       tweets << t
     end
@@ -36,7 +36,7 @@ tweets = getTweets("realDonaldTrump", 100)
 
 tweets_non_url = []
 tweets.each do |t|
-  t = t.gsub("@", "").gsub("#","")#@,#を取り除く
+  t = t.tr("@", "").tr("#","")#@,#を取り除く
   urls = URI.extract(t) #urlsにURL文字列を格納
 
   urls.uniq.each do |url|
@@ -70,5 +70,12 @@ datetime = DateTime.now
 #puts words #確認用
 font = 'Arial Unicode'
 words =  words.group_by(&:itself).map{ |key, value| [key, value.count] }.to_h
+
+
+count = words.size
+
+if count >= 60#大量にあるy場合のたん号数削減処理
+  ＃実装予定
+end
 cloud = MagicCloud::Cloud.new(words, rotate: :none, scale: :linear, :font_family=>font)
 cloud.draw(500, 250).write("#{datetime}.png")
